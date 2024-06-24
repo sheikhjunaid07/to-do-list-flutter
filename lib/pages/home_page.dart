@@ -56,67 +56,58 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text(
-          "T O D O S",
-          style: TextStyle(color: Colors.white, fontSize: 28),
-        ),
-        centerTitle: true,
-      ),
-      floatingActionButton: FloatingActionButton(
+        appBar: AppBar(
           backgroundColor: Colors.black,
-          onPressed: () {
-            openTodoBox();
-          },
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-          )),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: fireStoreServices.getTodoStream(),
-        builder: (context, snapshot) {
-          //if we have data, get all the notes
-          if (snapshot.hasData) {
-            List todosList = snapshot.data!.docs;
+          title: const Text(
+            "T O D O S",
+            style: TextStyle(color: Colors.white, fontSize: 28),
+          ),
+          centerTitle: true,
+        ),
+        floatingActionButton: FloatingActionButton(
+            backgroundColor: Colors.black,
+            onPressed: () {
+              openTodoBox();
+            },
+            child: const Icon(Icons.add, color: Colors.white)),
+        body: StreamBuilder<QuerySnapshot>(
+            stream: fireStoreServices.getTodoStream(),
+            builder: (context, snapshot) {
+              //if we have data, get all the notes
+              if (snapshot.hasData) {
+                List todosList = snapshot.data!.docs;
 
-            //display as a list
-            return ListView.builder(
-              itemCount: todosList.length,
-              itemBuilder: (context, index) {
-                //get each individual docs
-                DocumentSnapshot document = todosList[index];
-                String docId = document.id;
+                //display as a list
+                return ListView.builder(
+                    itemCount: todosList.length,
+                    itemBuilder: (context, index) {
+                      //get each individual docs
+                      DocumentSnapshot document = todosList[index];
+                      String docId = document.id;
 
-                //get note from each docs
-                Map<String, dynamic> data =
-                    document.data() as Map<String, dynamic>;
-                String noteText = data['todo'];
+                      //get note from each docs
+                      Map<String, dynamic> data =
+                          document.data() as Map<String, dynamic>;
+                      String noteText = data['todo'];
 
-                //display a list tile
-                return ListTile(
-                  title: Text(noteText),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                          onPressed: () => openTodoBox(docId: docId),
-                          icon: const Icon(Icons.settings)),
-                      IconButton(
-                          onPressed: () {
-                            fireStoreServices.deleteTodo(docId);
-                          },
-                          icon: const Icon(Icons.delete))
-                    ],
-                  ),
-                );
-              },
-            );
-          } else {
-            return const Text("No Todos!!!!!");
-          }
-        },
-      ),
-    );
+                      //display a list tile
+                      return ListTile(
+                          title: Text(noteText),
+                          trailing:
+                              Row(mainAxisSize: MainAxisSize.min, children: [
+                            IconButton(
+                                onPressed: () => openTodoBox(docId: docId),
+                                icon: const Icon(Icons.settings)),
+                            IconButton(
+                                onPressed: () {
+                                  fireStoreServices.deleteTodo(docId);
+                                },
+                                icon: const Icon(Icons.delete))
+                          ]));
+                    });
+              } else {
+                return const Text("No Todos!!!!!");
+              }
+            }));
   }
 }
